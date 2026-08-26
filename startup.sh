@@ -5,13 +5,16 @@ done
 
 export DISPLAY=:1
 
-qemu-img create -f qcow2 -b /opt/winxp/winxp.qcow2 -F qcow2 /tmp/winxp-overlay.qcow2
+OVERLAY_PATH="$HOME/winxp-overlay.qcow2"
+if [ ! -f "$OVERLAY_PATH" ]; then
+    qemu-img create -f qcow2 -b /opt/winxp/winxp.qcow2 -F qcow2 "$OVERLAY_PATH"
+fi
 
 qemu-system-x86_64 \
     -name "Windows XP" \
     -machine pc-i440fx-5.2,accel=kvm \
     -cpu core2duo -smp 2 -m 2048 \
-    -drive file=/tmp/winxp-overlay.qcow2,format=qcow2 \
+    -drive file="$OVERLAY_PATH",format=qcow2 \
     -usb -device usb-tablet \
     -device AC97 \
     -netdev user,id=net0 -device rtl8139,netdev=net0 \
